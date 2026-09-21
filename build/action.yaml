@@ -1,0 +1,63 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: build
+description: build
+
+inputs:
+  use_namespace_java_cache:
+    description: use namespace java cache
+    required: false
+    default: "true"
+  use_namespace_gradle_cache:
+    description: use namespace gradle cache
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: "git / setup"
+      shell: bash
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "no-reply@github.com"
+
+    - name: "java / setup (default)"
+      if: ${{ inputs.use_namespace_java_cache == 'false' }}
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      with:
+        check-latest: true
+        distribution: zulu
+        java-version: 25
+
+    - name: "java / setup (namespace)"
+      if: ${{ inputs.use_namespace_java_cache == 'true' }}
+      uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      with:
+        cache: "" # namespace handles this
+        check-latest: true
+        distribution: zulu
+        java-version: 25
+
+    - name: "namespace / gradle cache / setup"
+      if: ${{ inputs.use_namespace_gradle_cache == 'true' }}
+      uses: namespacelabs/nscloud-cache-action@1124a6f3ce44e5cf84cc22111530961f4d2a15f9 # v1.7.0
+      with:
+        cache: gradle
+
+    - name: "namespace / gradle cache / init"
+      if: ${{ inputs.use_namespace_gradle_cache == 'true' }}
+      shell: bash
+      run: |
+        mkdir -p ~/.gradle/init.d
+        nsc cache gradle setup --init-gradle="$HOME/.gradle/init.d/namespace-cache.gradle"
+
+    - name: "gradle / setup (default)"
+      if: ${{ inputs.use_namespace_gradle_cache == 'false' }}
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+
+    - name: "gradle / setup (namespace)"
+      if: ${{ inputs.use_namespace_gradle_cache == 'true' }}
+      uses: gradle/actions/setup-gradle@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+      with:
+        cache-disabled: true # namespace handles this

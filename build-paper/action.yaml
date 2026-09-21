@@ -1,0 +1,15 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: build-paper
+description: build-paper
+
+runs:
+  using: composite
+  steps:
+    - name: "gradle / apply patches"
+      shell: bash
+      run: ./gradlew applyPatches --stacktrace
+
+    - name: "gradle / build"
+      shell: bash
+      run: ./gradlew build --stacktrace

@@ -1,0 +1,38 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: publish-paper
+description: publish-paper
+
+inputs:
+  fill_api_url:
+    description: fill api url
+    required: true
+  fill_api_key:
+    description: fill api key
+    required: true
+  maven_username:
+    description: maven username
+    required: true
+  maven_password:
+    description: maven password
+    required: true
+  maven_tasks:
+    description: maven tasks
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: "gradle / publish / fill"
+      shell: bash
+      env:
+        FILL_API_KEY: ${{ inputs.fill_api_key }}
+        FILL_API_URL: ${{ inputs.fill_api_url }}
+      run: ./gradlew publishToFill --stacktrace
+
+    - name: "gradle / publish / maven"
+      shell: bash
+      env:
+        ORG_GRADLE_PROJECT_paperReleasesPassword: ${{ inputs.maven_password }}
+        ORG_GRADLE_PROJECT_paperReleasesUsername: ${{ inputs.maven_username }}
+      run: ./gradlew -PpublishDevBundle ${{ inputs.maven_tasks }} --stacktrace
