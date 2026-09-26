@@ -1,0 +1,44 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: publish-test-results
+description: publish-test-results
+
+inputs:
+  event:
+    description: event
+    required: true
+  commit:
+    description: commit
+    required: true
+  github_token:
+    description: github token
+    required: true
+  run_id:
+    description: run id
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: "download / event data"
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        github-token: ${{ inputs.github_token }}
+        run-id: ${{ inputs.run_id }}
+        name: event-data
+
+    - name: "download / test results"
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+      with:
+        github-token: ${{ inputs.github_token }}
+        run-id: ${{ inputs.run_id }}
+        name: test-results
+
+    - name: "publish / test results"
+      uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
+      with:
+        comment_mode: off
+        commit: ${{ inputs.commit }}
+        event_file: event-data/event.json
+        event_name: ${{ inputs.event }}
+        files: "test-results/**/*.xml"

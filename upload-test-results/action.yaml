@@ -1,7 +1,7 @@
 # https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
 
-name: upload-test results
-description: upload-test results
+name: upload-test-results
+description: upload-test-results
 
 runs:
   using: composite
