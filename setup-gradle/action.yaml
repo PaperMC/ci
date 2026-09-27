@@ -12,6 +12,10 @@ inputs:
     description: use namespace gradle cache
     required: false
     default: "true"
+  gradle_cache_push:
+    description: push to the namespace remote gradle cache
+    required: false
+    default: "true"
 
 runs:
   using: composite
@@ -50,7 +54,9 @@ runs:
       shell: bash
       run: |
         mkdir -p ~/.gradle/init.d
-        nsc cache gradle setup --init-gradle="$HOME/.gradle/init.d/namespace-cache.gradle"
+        nsc cache gradle setup \
+          --push=${{ inputs.gradle_cache_push }} \
+          --init-gradle="$HOME/.gradle/init.d/namespace-cache.gradle"
 
     - name: "gradle / setup (default)"
       if: ${{ inputs.use_namespace_gradle_cache == 'false' }}
