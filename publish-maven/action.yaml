@@ -1,0 +1,27 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: publish-maven
+description: publish-maven
+
+inputs:
+  maven_username:
+    description: maven username
+    required: true
+  maven_password:
+    description: maven password
+    required: true
+  maven_tasks:
+    description: maven tasks
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: "gradle / publish / maven"
+      shell: bash
+      env:
+        ORG_GRADLE_PROJECT_paperReleasesUsername: ${{ inputs.maven_username }}
+        ORG_GRADLE_PROJECT_paperReleasesPassword: ${{ inputs.maven_password }}
+        ORG_GRADLE_PROJECT_paperSnapshotsUsername: ${{ inputs.maven_username }}
+        ORG_GRADLE_PROJECT_paperSnapshotsPassword: ${{ inputs.maven_password }}
+      run: ./gradlew ${{ inputs.maven_tasks }} --stacktrace

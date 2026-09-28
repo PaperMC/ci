@@ -1,0 +1,22 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+
+name: publish-fill
+description: publish-fill
+
+inputs:
+  fill_api_url:
+    description: fill api url
+    required: true
+  fill_api_key:
+    description: fill api key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: "gradle / publish / fill"
+      shell: bash
+      env:
+        FILL_API_KEY: ${{ inputs.fill_api_key }}
+        FILL_API_URL: ${{ inputs.fill_api_url }}
+      run: ./gradlew publishToFill --stacktrace
