@@ -1,4 +1,5 @@
 # https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+# Keep in sync with build-folia
 
 name: build-paper
 description: build-paper
