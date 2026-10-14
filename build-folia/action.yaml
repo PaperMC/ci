@@ -1,0 +1,16 @@
+# https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action
+# Keep in sync with build-paper
+
+name: build-folia
+description: build-folia
+
+runs:
+  using: composite
+  steps:
+    - name: "gradle / apply patches"
+      shell: bash
+      run: ./gradlew applyAllPatches --stacktrace
+
+    - name: "gradle / build"
+      shell: bash
+      run: ./gradlew build --stacktrace
